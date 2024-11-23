@@ -8,8 +8,8 @@ from os.path import isfile
 from random import choice
 from string import ascii_uppercase, ascii_lowercase
 
-from flask import (Flask, Blueprint, render_template, request, safe_join,
-                   send_file, abort)
+from flask import Flask, Blueprint, render_template, request, send_file, abort
+from werkzeug.utils import safe_join  # Updated import for Flask 3.x
 import magic
 
 bp = Blueprint('blck', __name__, template_folder='templates')
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     app.register_blueprint(bp, url_prefix=args.r)
 
     if args.d:
-        app.run(host=args.l, port=args.p, threaded=True, debug=args.d)
+        app.run(host='0.0.0.0', port=args.p, threaded=True, debug=args.d)
     else:
         from bjoern import run
         run(app, args.l, int(args.p))
