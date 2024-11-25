@@ -32,5 +32,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Expose the application port (13321 in this case)
 EXPOSE 13321
 
-# Set the entrypoint to run your application
-ENTRYPOINT ["python3", "blck.py"]
+# Set the entrypoint to run your application with -d (debug) flag
+ENTRYPOINT ["python3", "blck.py", "-d"]
+
