@@ -26,5 +26,8 @@ COPY . .
 # Install Python dependencies from the requirements.txt file
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# Expose the application port 
+EXPOSE 13321
+
 # Set the entrypoint for your application
 ENTRYPOINT ["python3", "blck.py"]
