@@ -1,7 +1,10 @@
 # Use the official slim version of Debian Bullseye as the base image
 FROM debian:bullseye-slim
 
-# Update the package list, install required packages, and clean up
+# Set environment variables to ensure non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update the package list, upgrade packages, install required packages, and clean up
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
@@ -14,10 +17,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory (optional, depending on your use case)
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the requirements file into the container
+# Copy the requirements.txt file into the container
 COPY requirements.txt .
 
 # Copy the application code into the container
@@ -26,8 +29,8 @@ COPY . .
 # Install Python dependencies from the requirements.txt file
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Expose the application port 
+# Expose the application port (13321 in this case)
 EXPOSE 13321
 
-# Set the entrypoint for your application
+# Set the entrypoint to run your application
 ENTRYPOINT ["python3", "blck.py"]
