@@ -1,3 +1,6 @@
+# Use the official slim version of Debian Bullseye as the base image
+FROM debian:bullseye-slim
+
 # Update the package list, install required packages, and clean up
 RUN apt-get update && \
     apt-get upgrade -y && \
