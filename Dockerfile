@@ -36,7 +36,7 @@ WORKDIR /app
 COPY . .
 
 # Install Python dependencies from requirements.txt using UV Astra
-RUN uv add -r requirements.in
+RUN uv add -r requirements.txt
 
 # Expose a port (if your app listens on a port)
 EXPOSE 13321
