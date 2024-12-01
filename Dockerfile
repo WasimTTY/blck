@@ -1,5 +1,5 @@
 # Use Ubuntu as the base image
-FROM ubuntu:20.04
+FROM debian:latest
 
 # Set environment variables to avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
     curl \
     python3 \
-    python3-pip \
+    python3-dev \
     gcc \
     libev-dev \
     libmagic1 \
@@ -34,6 +34,9 @@ WORKDIR /app
 
 # Copy the application files into the container
 COPY . .
+
+# Initialize the working python project directory
+RUN uv init
 
 # Install Python dependencies from requirements.txt using UV Astra
 RUN uv add -r requirements.txt
