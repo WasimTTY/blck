@@ -1,37 +1,45 @@
-# Use the official slim version of Debian Bullseye as the base image
-FROM debian:bullseye-slim
+# Use Ubuntu as the base image
+FROM ubuntu:20.04
 
-# Set environment variables to ensure non-interactive installation
+# Set environment variables to avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update the package list, upgrade packages, install required packages, and clean up
-RUN apt-get update && \
-    apt-get upgrade -y && \
+# Install necessary dependencies
+RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
-        python3 \
-        python3-pip \
-        libev-dev \
-        gcc \
-        libmagic1 && \
-    # Clean up APT cache and remove package lists to reduce image size
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    curl \
+    python3 \
+    python3-pip \
+    gcc \
+    libev-dev \
+    libmagic1 \
+    clang \ 
+    build-essential \     
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory inside the container
+# Install UV Astra (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Ensure the UV binary is in the PATH by setting it explicitly
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Make sure the env script has execute permissions and then run it
+RUN chmod +x /root/.local/bin/env && /root/.local/bin/env
+
+# Display the installed UV version for confirmation
+RUN uv version
+
+# Set the working directory for the application
 WORKDIR /app
 
-# Copy the requirements.txt file into the container
-COPY requirements.txt .
-
-# Copy the application code into the container
+# Copy the application files into the container
 COPY . .
 
-# Install Python dependencies from the requirements.txt file
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Install Python dependencies from requirements.txt using UV Astra
+RUN uv add -r requirements.in
 
-# Expose the application port (13321 in this case)
+# Expose a port (if your app listens on a port)
 EXPOSE 13321
 
-# Set the entrypoint to run your application with -d (debug) flag
-ENTRYPOINT ["python3", "blck.py", "-d"]
-
+# Set the entrypoint to run your Python application with UV run command
+ENTRYPOINT ["uv", "run", "python3", "blck.py", "-d"]
