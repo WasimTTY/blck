@@ -8,51 +8,35 @@ sudo apt update -y
 echo "Upgrading all packages..."
 sudo apt upgrade -y
 
-# Function to check if a package is installed
-check_package_installed() {
-  if dpkg -l | grep -q "^ii  $1 "; then
-    echo "$1 is already installed."
-  else
-    echo "$1 is not installed. Installing..."
-    sudo apt install -y $1
-  fi
-}
-
-# Function to check if a package is correctly installed (for gcc, libev-dev, python3-dev)
-check_package_version() {
+# Function to check if a package is installed and working correctly
+check_package() {
   PACKAGE=$1
-  COMMAND=$2
-  if $COMMAND --version &>/dev/null; then
-    echo "$PACKAGE is installed correctly."
+  INSTALL_CMD="sudo apt install -y $PACKAGE"
+  
+  # Check if the package is installed
+  if dpkg -l | grep -q "^ii  $PACKAGE "; then
+    echo "$PACKAGE is already installed."
   else
-    echo "$PACKAGE is not installed correctly. Installing..."
-    sudo apt install -y $PACKAGE
+    echo "$PACKAGE is not installed. Installing..."
+    $INSTALL_CMD
+  fi
+  
+  # Check if the package command works (verify correct installation)
+  if $2 --version &>/dev/null; then
+    echo "$PACKAGE is installed and working correctly."
+  else
+    echo "$PACKAGE installation failed. Reinstalling..."
+    $INSTALL_CMD
   fi
 }
 
 # Check and install required packages if not installed
 echo "Checking and installing required packages..."
 
-check_package_installed "gcc"
-check_package_installed "libev-dev"
-check_package_installed "python3-dev"
-check_package_installed "python3"
-
-# Check if gcc is working correctly
-echo "Verifying gcc installation..."
-check_package_version "gcc" "gcc"
-
-# Check if libev-dev is working correctly
-echo "Verifying libev-dev installation..."
-check_package_version "libev-dev" "pkg-config --libs libev"
-
-# Check if python3-dev is working correctly
-echo "Verifying python3-dev installation..."
-check_package_version "python3-dev" "python3-config --configdir"
-
-# Check if Python3 is working correctly
-echo "Verifying Python3 installation..."
-python3 --version
+check_package "gcc" "gcc"
+check_package "libev-dev" "pkg-config --libs libev"
+check_package "python3-dev" "python3-config --configdir"
+check_package "python3" "python3"
 
 # Display a message when installation is complete
 echo "Package installation complete!"
