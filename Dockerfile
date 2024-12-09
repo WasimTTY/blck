@@ -23,20 +23,29 @@ ENV PATH="/root/.local/bin:${PATH}"
 # Make sure the env script has execute permissions and then run it
 RUN chmod +x /root/.local/bin/env && /root/.local/bin/env
 
-# Display the installed UV version for confirmation
-RUN uv version
-
 # Set the working directory for the application
 WORKDIR /app
 
-# Copy the application files into the container
-COPY . .
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
 
-# Install Python dependencies from requirements.txt using UV Astra
-RUN uv add -r requirements.txt
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 # Expose a port (if your app listens on a port)
 EXPOSE 13321
 
 # Set the entrypoint to run your Python application with UV run command
-ENTRYPOINT ["uv", "run", "python3", "blck.py", "-d"]
+ENTRYPOINT ["uv", "run", "blck.py", "-d"]
