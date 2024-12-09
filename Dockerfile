@@ -1,21 +1,18 @@
-# Use Ubuntu as the base image
-FROM debian:latest
+# Use Alpine 3.21.0 as the base image
+FROM alpine:3.21.0
 
-# Set environment variables to avoid interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install necessary dependencies
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y \
+# Install necessary dependencies using apk (Alpine package manager)
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
     curl \
     python3 \
     python3-dev \
     gcc \
     libev-dev \
-    libmagic1 \
-    clang \ 
-    build-essential \     
-    && rm -rf /var/lib/apt/lists/*
+    libmagic \
+    clang \
+    build-base \
+    && rm -rf /var/cache/apk/*
 
 # Install UV Astra (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -34,9 +31,6 @@ WORKDIR /app
 
 # Copy the application files into the container
 COPY . .
-
-# Initialize the working python project directory
-RUN uv init
 
 # Install Python dependencies from requirements.txt using UV Astra
 RUN uv add -r requirements.txt
