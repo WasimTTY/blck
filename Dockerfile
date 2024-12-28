@@ -29,7 +29,6 @@ ENV UV_COMPILE_BYTECODE=1
 # Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
 
-# Copy project dependency files and install dependencies
 # Copy uv.lock and pyproject.toml before the application code to leverage Docker layer caching
 COPY uv.lock pyproject.toml /app/
 
