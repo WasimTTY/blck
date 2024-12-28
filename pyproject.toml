@@ -1,0 +1,11 @@
+[project]
+name = "blck"
+version = "0.1.0"
+description = "An ephemeral pastebin/URL-shortener"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bjoern==3.2.2",
+    "flask==3.1.0",
+    "python-magic==0.4.27",
+]
