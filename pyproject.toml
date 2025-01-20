@@ -5,7 +5,7 @@ description = "An ephemeral pastebin/URL-shortener"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "bjoern==3.2.2",
+    "gunicorn==23.0.0",
     "flask==3.1.0",
     "python-magic==0.4.27",
 ]
