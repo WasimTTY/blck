@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template, request, make_response, redirect, url_for, jsonify
+from flask import Flask, Blueprint, render_template, request, redirect, url_for, jsonify
 from werkzeug.utils import safe_join
 import magic
 from io import BytesIO
