@@ -6,12 +6,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
     curl \
     python3 \
-    python3-dev \
-    gcc \
-    libev-dev \
     libmagic \
-    clang \
-    build-base \
     && rm -rf /var/cache/apk/*
 
 # Install UV Astra (Python package manager)
@@ -22,9 +17,6 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 # Set the working directory for the application
 WORKDIR /app
-
-# Enable bytecode compilation
-ENV UV_COMPILE_BYTECODE=1
 
 # Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
@@ -37,10 +29,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 # Copy the rest of the application code
-COPY . /app    
+COPY . /app
 
-# Expose a port (if your app listens on a port)
-EXPOSE 13321
+# Expose a port 
+EXPOSE 8080
 
 # Set the entrypoint to run your Python application with UV run command
-ENTRYPOINT ["uv", "run", "blck.py", "-d"]
+ENTRYPOINT ["uv", "run", "gunicorn", "-c", "gunicorn_config.py", "blck:app"]
